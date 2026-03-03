@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BikeStop SG | Premium AI Marketplace</title>
+    <title>BIKESTOP | Premium AI Marketplace</title>
+    <meta name="google-site-verification" content="YOUR_ACTUAL_CODE_HERE" />
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -12,40 +14,38 @@
 <body>
 
     <div id="splash" class="splash-screen">
-        <h1 class="logo-text">BIKESTOP.STORE</h1>
+        <h1 class="logo-text">BIKESTOP</h1>
         <div class="loader-line"></div>
     </div>
 
     <div id="loginPage" class="page-view" style="display:none;">
         <div class="auth-wrapper">
             <div class="auth-card shadow-lg">
-                <h2 class="fw-bold mb-4 text-center">Join BikeStop</h2>
+                <h2 class="fw-bold mb-4 text-center">Join BIKESTOP</h2>
                 
-                <ul class="nav nav-pills nav-fill mb-4 bg-light rounded-pill p-1" id="authTabs">
+                <ul class="nav nav-pills nav-fill mb-4 bg-light rounded-pill p-1">
                     <li class="nav-item"><a class="nav-link active small" data-bs-toggle="pill" href="#googleTab">Social</a></li>
                     <li class="nav-item"><a class="nav-link small" data-bs-toggle="pill" href="#emailTab">Email</a></li>
-                    <li class="nav-item"><a class="nav-link small" data-bs-toggle="pill" href="#phoneTab">OTP</a></li>
                 </ul>
 
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="googleTab">
                         <button id="googleBtn" class="btn btn-dark w-100 py-3 rounded-pill fw-bold">Continue with Google</button>
                     </div>
+
                     <div class="tab-pane fade" id="emailTab">
+                        <div id="authStatus" class="alert alert-success small py-2 d-none" role="alert"></div>
+                        
                         <input type="email" id="emailInput" class="form-control mb-2 rounded-pill" placeholder="Email Address">
-                        <input type="password" id="passInput" class="form-control mb-3 rounded-pill" placeholder="Password">
-                        <div class="d-grid gap-2">
-                            <button id="emailPassBtn" class="btn btn-dark rounded-pill">Login / Sign Up</button>
-                            <button id="emailLinkBtn" class="btn btn-outline-dark rounded-pill border-0 small">Send Login Link</button>
+                        <input type="password" id="passInput" class="form-control mb-2 rounded-pill" placeholder="Password">
+                        
+                        <div class="text-end mb-3">
+                            <button id="forgotPassBtn" class="btn btn-link p-0 small text-decoration-none text-muted">Forgot Password?</button>
                         </div>
-                    </div>
-                    <div class="tab-pane fade" id="phoneTab">
-                        <div id="recaptcha-container"></div>
-                        <input type="tel" id="phoneInput" class="form-control mb-2 rounded-pill" placeholder="+65 8123 4567">
-                        <button id="phoneBtn" class="btn btn-dark w-100 rounded-pill">Send OTP</button>
-                        <div id="otpSection" class="mt-3" style="display:none;">
-                            <input type="text" id="otpInput" class="form-control mb-2 rounded-pill" placeholder="6-Digit Code">
-                            <button id="verifyOtpBtn" class="btn btn-danger w-100 rounded-pill">Verify & Enter</button>
+
+                        <div class="d-grid gap-2">
+                            <button id="emailPassBtn" class="btn btn-dark rounded-pill py-2">Login / Sign Up</button>
+                            <button id="emailLinkBtn" class="btn btn-outline-dark rounded-pill border-0 small">Login via Magic Link</button>
                         </div>
                     </div>
                 </div>
@@ -66,6 +66,11 @@
         </nav>
 
         <div class="container mt-4">
+            <div id="verifyBanner" class="alert alert-warning text-center rounded-pill py-2 mb-4 d-none" style="font-size: 0.85rem;">
+                Please <b>verify your email</b> to post listings. 
+                <button id="resendVerifyBtn" class="btn btn-link p-0 pb-1 small text-decoration-none fw-bold">Resend Link</button>
+            </div>
+
             <input type="text" id="search" class="form-control search-bar mb-4" placeholder="Search carbon, trek, s-works..." onkeyup="render()">
             
             <div id="uploadSection" class="upload-card p-4 mb-4 shadow-sm" style="display:none;">
@@ -81,7 +86,7 @@
         </div>
 
         <footer class="text-center py-4 mt-5 border-top">
-            <p class="small text-muted">© 2026 BikeStop.Store</p>
+            <p class="small text-muted">© 2026 BIKESTOP</p>
             <a href="privacy-policy.html" class="text-decoration-none text-muted small mx-2">Privacy Policy</a>
             <a href="terms-of-service.html" class="text-decoration-none text-muted small mx-2">Terms of Service</a>
         </footer>
