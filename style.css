@@ -1,62 +1,23 @@
-:root {
-    --accent: #ff3e3e; /* Racing Red */
-    --bg: #0a0a0a;
-    --card: #161616;
-}
+body { background: #ffffff; font-family: 'Inter', sans-serif; color: #1a1a1a; }
 
-body { 
-    background-color: var(--bg); 
-    color: white; 
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    margin: 0;
-}
-
-/* ⚡ The Splash Screen */
+/* Splash */
 .splash-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: black; display: flex; flex-direction: column;
-    justify-content: center; align-items: center; z-index: 10000;
+    background: #000; color: #fff; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; z-index: 9999;
 }
+.logo-text { font-weight: 900; letter-spacing: -2px; font-size: 2.5rem; }
+.loader-line { width: 40px; height: 3px; background: #fff; margin-top: 20px; animation: pulse 1s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
 
-.logo-text {
-    font-size: 2.5rem; font-weight: 900; letter-spacing: -2px;
-    background: linear-gradient(to right, #fff, #888);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
+/* Auth Layout */
+.auth-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; background: #f8f9fa; }
+.auth-card { background: white; padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; }
 
-/* 💎 Glassmorphism Inputs */
-.glass-input {
-    background: rgba(255,255,255,0.05) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-    color: white !important;
-    border-radius: 12px !important;
-    padding: 15px !important;
-}
+/* UI Elements */
+.search-bar { border-radius: 50px; padding: 15px 25px; border: 1px solid #eee; background: #f8f9fa; }
+.upload-card { background: #fff; border: 1px solid #eee; border-radius: 20px; }
+.bike-card { border: none; border-radius: 20px; overflow: hidden; background: #f8f9fa; transition: 0.2s; }
+.bike-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
 
-/* 🚲 Premium Bike Cards */
-.bike-card {
-    background: var(--card);
-    border: 1px solid #222;
-    border-radius: 20px;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.bike-card:hover {
-    transform: translateY(-10px);
-    border-color: var(--accent);
-    box-shadow: 0 10px 30px rgba(255, 62, 62, 0.2);
-}
-
-.price-tag {
-    color: var(--accent);
-    font-weight: 800;
-    font-size: 1.2rem;
-}
-
-/* 📱 Navigation */
-.navbar {
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(15px);
-    border-bottom: 1px solid #222;
-}
+.price-text { color: #ff3e3e; font-weight: 800; font-size: 1.1rem; }
