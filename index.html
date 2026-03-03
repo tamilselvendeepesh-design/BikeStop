@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BikeStop SG | AI Marketplace</title>
+    <title>BikeStop SG | AI-Powered Marketplace</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
@@ -11,45 +11,82 @@
 <body>
 
     <div id="splash">
-        <h1 class="logo-text">BIKESTOP SG</h1>
+        <div class="text-center">
+            <h1 class="logo-text">BIKESTOP SG</h1>
+            <p class="small tracking-widest text-secondary">AI MARKETPLACE</p>
+        </div>
     </div>
 
-    <div id="loginPage" class="page container py-5 text-center">
-        <div class="auth-card mx-auto shadow-lg p-4 mt-5">
-            <h2 class="fw-bold mb-4">Start Riding</h2>
-            <button class="btn btn-dark w-100 mb-3 py-2" onclick="loginGoogle()">Continue with Google</button>
-            <input type="email" id="email" class="form-control mb-2" placeholder="Email">
-            <input type="password" id="pass" class="form-control mb-2" placeholder="Password">
-            <button class="btn btn-primary w-100" onclick="loginEmail()">Login / Sign Up</button>
-            <div id="recaptcha-container" class="mt-3"></div>
-            <button class="btn btn-link text-dark mt-3" onclick="showPage('homePage')">Browse as Guest</button>
+    <div id="loginPage" class="page container py-5">
+        <div class="auth-card mx-auto shadow-lg p-5 mt-5">
+            <h2 class="fw-bold mb-2">Welcome</h2>
+            <p class="text-muted mb-4">Log in to start buying and selling.</p>
+            <button class="btn btn-dark w-100 mb-3 py-3 rounded-pill fw-bold" onclick="loginGoogle()">Continue with Google</button>
+            <hr>
+            <input type="email" id="email" class="form-control mb-2 rounded-pill px-4" placeholder="Email Address">
+            <input type="password" id="pass" class="form-control mb-3 rounded-pill px-4" placeholder="Password">
+            <button class="btn btn-primary w-100 py-2 rounded-pill shadow" onclick="loginEmail()">Login / Sign Up</button>
+            <button class="btn btn-link text-dark mt-3 w-100" onclick="showPage('homePage')">Browse as Guest</button>
         </div>
     </div>
 
     <div id="homePage" class="page">
-        <nav class="navbar navbar-dark bg-black sticky-top">
-            <div class="container">
-                <a class="navbar-brand fw-bold">BIKESTOP SG</a>
-                <button class="btn btn-danger rounded-pill px-4" onclick="toggleUpload()">+ SELL</button>
+        <nav class="navbar navbar-dark bg-black sticky-top py-3 shadow">
+            <div class="container d-flex justify-content-between">
+                <a class="navbar-brand fw-bold tracking-tighter" href="#" onclick="location.reload()">BIKESTOP SG</a>
+                <button class="btn btn-danger rounded-pill px-4 fw-bold" onclick="toggleUpload()">+ SELL BIKE</button>
             </div>
         </nav>
 
         <div class="container mt-4">
-            <div class="search-container mb-4">
-                <input type="text" id="search" class="form-control form-control-lg rounded-pill" placeholder="Search brands, carbon, road bikes..." onkeyup="render()">
-                <div id="ai-suggestion" class="small text-muted mt-2 ms-3"></div>
+            <div class="search-wrapper mb-5">
+                <div class="input-group input-group-lg shadow-sm">
+                    <input type="text" id="search" class="form-control rounded-pill-start border-0 ps-4" 
+                           placeholder="Search brand, material, or any word..." onkeyup="render()">
+                    <button class="btn btn-white rounded-pill-end border-0 pe-4">🔍</button>
+                </div>
+                <div id="ai-suggestion" class="small mt-2 ms-4 text-muted">
+                    Try searching: <span class="badge bg-light text-dark cursor-pointer" onclick="quickSearch('Carbon')">Carbon</span>
+                    <span class="badge bg-light text-dark cursor-pointer" onclick="quickSearch('S-Works')">S-Works</span>
+                    <span class="badge bg-light text-dark cursor-pointer" onclick="quickSearch('Mint')">Mint</span>
+                </div>
             </div>
 
-            <div id="uploadSection" class="card p-4 shadow-sm mb-5 border-0" style="display:none; border-radius: 20px;">
-                <h4 class="fw-bold">AI Listing Engine</h4>
-                <input type="text" id="bikeTitle" class="form-control mb-2" placeholder="Brand & Model (e.g. specialized sl8)">
-                <input type="number" id="bikePrice" class="form-control mb-2" placeholder="Price (SGD)">
-                <textarea id="bikeCondition" class="form-control mb-2" placeholder="Describe condition, scratches, or frame health..."></textarea>
-                <input type="file" id="bikePhotos" class="form-control mb-3" multiple accept="image/*">
-                <button onclick="aiUpload()" id="upBtn" class="btn btn-dark w-100 py-2">Post Listing</button>
+            <div id="uploadSection" class="card p-4 shadow mb-5 border-0 bg-white" style="display:none; border-radius: 25px;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold m-0">Create AI Listing</h4>
+                    <button class="btn-close" onclick="toggleUpload()"></button>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label small fw-bold">Brand & Model</label>
+                        <input type="text" id="bikeTitle" class="form-control rounded-3" placeholder="e.g. Specialized SL8">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label small fw-bold">Price (SGD)</label>
+                        <input type="number" id="bikePrice" class="form-control rounded-3" placeholder="e.g. 5000">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-primary">AI Detection: Material & Condition</label>
+                    <textarea id="bikeCondition" class="form-control rounded-3" rows="4" 
+                              placeholder="Type your description here. Mention if it's Carbon, Alloy, or Steel. Our AI will automatically tag the material for you!"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-bold">Photos (Select multiple)</label>
+                    <input type="file" id="bikePhotos" class="form-control rounded-3" multiple accept="image/*">
+                </div>
+
+                <button onclick="aiUpload()" id="upBtn" class="btn btn-dark w-100 py-3 rounded-pill fw-bold shadow-lg">
+                    Post Listing with AI Scan
+                </button>
             </div>
 
-            <div id="grid" class="row"></div>
+            <div id="grid" class="row g-4">
+                </div>
         </div>
     </div>
 
@@ -57,5 +94,13 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="app.js"></script>
+
+    <script>
+        // Simple UI Helper for the Quick Search tags
+        function quickSearch(word) {
+            document.getElementById('search').value = word;
+            render();
+        }
+    </script>
 </body>
 </html>
