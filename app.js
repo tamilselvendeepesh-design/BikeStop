@@ -1,7 +1,6 @@
-// 1. PROJECT CONFIGURATION
 const firebaseConfig = {
     apiKey: "AIzaSyB4GuZE6rpatln-LlOJE3z_h3fn1F6mxZg",
-    authDomain: "bikestop.store", // UPDATED: Linked to your custom domain
+    authDomain: "bikestop.store",
     projectId: "bikestop-72fa7",
     storageBucket: "bikestop-72fa7.firebasestorage.app",
     messagingSenderId: "264513335139",
@@ -9,143 +8,22 @@ const firebaseConfig = {
     measurementId: "G-TTEC5PLHMC"
 };
 
-const IMGBB_KEY = "20d270d9ff63b6b39d5c3ca92b4c6f02";
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-let allBikes = [];
+// Splash Control
+setTimeout(() => {
+    document.getElementById('splash').style.display = 'none';
+    auth.onAuthStateChanged(user => {
+        if (user) showPage('homePage');
+        else showPage('loginPage');
+    });
+}, 1200);
 
-// 2. PAGE NAVIGATION
 function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+    document.getElementById(id).style.display = 'block';
 }
 
-// 3. AI KNOWLEDGE BASE (Auto-fixes titles)
-const aiKnowledge = {
-    "sl8": "Specialized S-Works SL8",
-    "sl7": "Specialized S-Works SL7",
-    "caad": "Cannondale CAAD13",
-    "dogma": "Pinarello Dogma F12",
-    "tcr": "Giant TCR Advanced",
-    "propel": "Giant Propel",
-    "emonda": "Trek Emonda",
-    "madone": "Trek Madone",
-    "infinito": "Bianchi Infinito",
-    "oltre": "Bianchi Oltre XR4",
-    "aeroad": "Canyon Aeroad",
-    "ultimate": "Canyon Ultimate"
-};
-
-// 4. DATA FETCHING
-db.collection("bikes").orderBy("time", "desc").onSnapshot(snap => {
-    allBikes = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    render();
-});
-
-// 5. DEEP SEARCH ENGINE (Fuzzy/Typo-Tolerant)
-function render() {
-    const term = document.getElementById('search').value.toLowerCase();
-    const grid = document.getElementById('grid');
-    grid.innerHTML = "";
-
-    let results = allBikes;
-
-    if (term.trim() !== "") {
-        const fuse = new Fuse(allBikes, {
-            keys: ['title', 'condition', 'frame'], // Searches across these fields
-            threshold: 0.3, // 0.3 = very typo-tolerant; matches any partial word
-            findAllMatches: true
-        });
-        results = fuse.search(term).map(r => r.item);
-    }
-
-    results.forEach(bike => {
-        grid.innerHTML += `
-            <div class="col-md-4 col-6 mb-4">
-                <div class="card bike-card h-100 shadow-sm border-0">
-                    <img src="${bike.images[0]}" class="card-img-top" style="height:180px; object-fit:cover; border-radius:15px 15px 0 0;">
-                    <div class="card-body">
-                        <span class="badge bg-dark mb-2">${bike.frame}</span>
-                        <h6 class="fw-bold mb-1 text-truncate">${bike.title}</h6>
-                        <p class="text-danger fw-bold m-0">$${bike.price}</p>
-                        <p class="small text-muted text-truncate mt-1">${bike.condition}</p>
-                    </div>
-                </div>
-            </div>`;
-    });
-}
-
-// 6. AI UPLOAD LOGIC (Auto-Scans Description for Material)
-async function aiUpload() {
-    const btn = document.getElementById('upBtn');
-    const titleInput = document.getElementById('bikeTitle').value;
-    const descInput = document.getElementById('bikeCondition').value.toLowerCase();
-    
-    if(!titleInput || !descInput) return alert("Please fill in Title and Description!");
-
-    btn.disabled = true; 
-    btn.innerText = "AI Scanning Details...";
-
-    let finalTitle = titleInput;
-    let detectedMaterial = "Unknown";
-
-    // AI Step 1: Improve Brand/Model name
-    for (let key in aiKnowledge) {
-        if (titleInput.toLowerCase().includes(key)) finalTitle = aiKnowledge[key];
-    }
-
-    // AI Step 2: Auto-detect Material from Description
-    if (descInput.includes("carbon") || descInput.includes("s-works") || descInput.includes("fibre")) {
-        detectedMaterial = "Carbon";
-    } else if (descInput.includes("alloy") || descInput.includes("aluminum") || descInput.includes("alu")) {
-        detectedMaterial = "Aluminum";
-    } else if (descInput.includes("steel") || descInput.includes("chromoly")) {
-        detectedMaterial = "Steel";
-    } else if (descInput.includes("ti ") || descInput.includes("titanium")) {
-        detectedMaterial = "Titanium";
-    }
-
-    // Photo Upload to ImgBB
-    const files = document.getElementById('bikePhotos').files;
-    let urls = [];
-    for (let f of files) {
-        let fd = new FormData(); 
-        fd.append("image", f);
-        try {
-            let r = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {method:"POST", body:fd});
-            let d = await r.json();
-            urls.push(d.data.url);
-        } catch(e) { console.error("Upload failed"); }
-    }
-
-    // Save to Firestore
-    await db.collection("bikes").add({
-        title: finalTitle,
-        price: parseFloat(document.getElementById('bikePrice').value) || 0,
-        frame: detectedMaterial,
-        condition: document.getElementById('bikeCondition').value,
-        images: urls,
-        time: Date.now(),
-        reports: 0
-    });
-    
-    location.reload();
-}
-
-// 7. GOOGLE LOGIN
-async function loginGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    try {
-        await auth.signInWithPopup(provider);
-        showPage('homePage');
-    } catch (e) {
-        alert("Login failed. Make sure bikestop.store is authorized in Firebase Console.");
-    }
-}
-
-function toggleUpload() {
-    const sec = document.getElementById('uploadSection');
-    sec.style.display = (sec.style.display === 'none') ? 'block' : 'none';
-}
+// (Add your existing render, aiUpload, and loginGoogle functions here)
