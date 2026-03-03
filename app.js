@@ -1,6 +1,7 @@
+// 1. PROJECT CONFIGURATION
 const firebaseConfig = {
     apiKey: "AIzaSyB4GuZE6rpatln-LlOJE3z_h3fn1F6mxZg",
-    authDomain: "bikestop-72fa7.firebaseapp.com",
+    authDomain: "bikestop.store", // UPDATED: Linked to your custom domain
     projectId: "bikestop-72fa7",
     storageBucket: "bikestop-72fa7.firebasestorage.app",
     messagingSenderId: "264513335139",
@@ -15,34 +16,35 @@ const auth = firebase.auth();
 
 let allBikes = [];
 
-// Splash & Page Logic
-setTimeout(() => {
-    document.getElementById('splash').style.opacity = '0';
-    setTimeout(() => { document.getElementById('splash').style.display = 'none'; showPage('loginPage'); }, 800);
-}, 1000);
-
+// 2. PAGE NAVIGATION
 function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 }
 
-// 1. AI KNOWLEDGE BASE (A-L)
+// 3. AI KNOWLEDGE BASE (Auto-fixes titles)
 const aiKnowledge = {
-    "sl8": "Specialized S-Works SL8", "sl7": "Specialized S-Works SL7",
-    "caad": "Cannondale CAAD13", "dogma": "Pinarello Dogma F12",
-    "tcr": "Giant TCR Advanced", "propel": "Giant Propel",
-    "emonda": "Trek Emonda", "madone": "Trek Madone",
-    "infinito": "Bianchi Infinito", "oltre": "Bianchi Oltre XR4",
-    "aeroad": "Canyon Aeroad", "ultimate": "Canyon Ultimate"
+    "sl8": "Specialized S-Works SL8",
+    "sl7": "Specialized S-Works SL7",
+    "caad": "Cannondale CAAD13",
+    "dogma": "Pinarello Dogma F12",
+    "tcr": "Giant TCR Advanced",
+    "propel": "Giant Propel",
+    "emonda": "Trek Emonda",
+    "madone": "Trek Madone",
+    "infinito": "Bianchi Infinito",
+    "oltre": "Bianchi Oltre XR4",
+    "aeroad": "Canyon Aeroad",
+    "ultimate": "Canyon Ultimate"
 };
 
-// 2. DATA FETCHING
+// 4. DATA FETCHING
 db.collection("bikes").orderBy("time", "desc").onSnapshot(snap => {
     allBikes = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     render();
 });
 
-// 3. DEEP SEARCH ENGINE (Finds any word in name or description)
+// 5. DEEP SEARCH ENGINE (Fuzzy/Typo-Tolerant)
 function render() {
     const term = document.getElementById('search').value.toLowerCase();
     const grid = document.getElementById('grid');
@@ -52,10 +54,9 @@ function render() {
 
     if (term.trim() !== "") {
         const fuse = new Fuse(allBikes, {
-            keys: ['title', 'condition', 'frame'],
-            threshold: 0.3, // Lower = stricter. 0.3 ensures "one word match" works perfectly.
-            findAllMatches: true,
-            useExtendedSearch: true // Allows searching specific words
+            keys: ['title', 'condition', 'frame'], // Searches across these fields
+            threshold: 0.3, // 0.3 = very typo-tolerant; matches any partial word
+            findAllMatches: true
         });
         results = fuse.search(term).map(r => r.item);
     }
@@ -76,7 +77,7 @@ function render() {
     });
 }
 
-// 4. AI UPLOAD LOGIC (Auto-Scans Description for Material)
+// 6. AI UPLOAD LOGIC (Auto-Scans Description for Material)
 async function aiUpload() {
     const btn = document.getElementById('upBtn');
     const titleInput = document.getElementById('bikeTitle').value;
@@ -84,17 +85,18 @@ async function aiUpload() {
     
     if(!titleInput || !descInput) return alert("Please fill in Title and Description!");
 
-    btn.disabled = true; btn.innerText = "AI Scanning Details...";
+    btn.disabled = true; 
+    btn.innerText = "AI Scanning Details...";
 
     let finalTitle = titleInput;
-    let detectedMaterial = "N/A";
+    let detectedMaterial = "Unknown";
 
-    // AI Step 1: Fix Title
+    // AI Step 1: Improve Brand/Model name
     for (let key in aiKnowledge) {
         if (titleInput.toLowerCase().includes(key)) finalTitle = aiKnowledge[key];
     }
 
-    // AI Step 2: Scan Description for Material
+    // AI Step 2: Auto-detect Material from Description
     if (descInput.includes("carbon") || descInput.includes("s-works") || descInput.includes("fibre")) {
         detectedMaterial = "Carbon";
     } else if (descInput.includes("alloy") || descInput.includes("aluminum") || descInput.includes("alu")) {
@@ -105,10 +107,12 @@ async function aiUpload() {
         detectedMaterial = "Titanium";
     }
 
+    // Photo Upload to ImgBB
     const files = document.getElementById('bikePhotos').files;
     let urls = [];
     for (let f of files) {
-        let fd = new FormData(); fd.append("image", f);
+        let fd = new FormData(); 
+        fd.append("image", f);
         try {
             let r = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {method:"POST", body:fd});
             let d = await r.json();
@@ -116,9 +120,10 @@ async function aiUpload() {
         } catch(e) { console.error("Upload failed"); }
     }
 
+    // Save to Firestore
     await db.collection("bikes").add({
         title: finalTitle,
-        price: parseFloat(document.getElementById('bikePrice').value),
+        price: parseFloat(document.getElementById('bikePrice').value) || 0,
         frame: detectedMaterial,
         condition: document.getElementById('bikeCondition').value,
         images: urls,
@@ -127,4 +132,20 @@ async function aiUpload() {
     });
     
     location.reload();
+}
+
+// 7. GOOGLE LOGIN
+async function loginGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+        await auth.signInWithPopup(provider);
+        showPage('homePage');
+    } catch (e) {
+        alert("Login failed. Make sure bikestop.store is authorized in Firebase Console.");
+    }
+}
+
+function toggleUpload() {
+    const sec = document.getElementById('uploadSection');
+    sec.style.display = (sec.style.display === 'none') ? 'block' : 'none';
 }
