@@ -1,6 +1,5 @@
-body { background: #ffffff; font-family: 'Inter', sans-serif; color: #1a1a1a; }
+body { background: #ffffff; font-family: 'Inter', sans-serif; color: #1a1a1a; margin: 0; }
 
-/* Splash */
 .splash-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: #000; color: #fff; display: flex; flex-direction: column;
@@ -10,14 +9,16 @@ body { background: #ffffff; font-family: 'Inter', sans-serif; color: #1a1a1a; }
 .loader-line { width: 40px; height: 3px; background: #fff; margin-top: 20px; animation: pulse 1s infinite; }
 @keyframes pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
 
-/* Auth Layout */
 .auth-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; background: #f8f9fa; }
-.auth-card { background: white; padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; }
+.auth-card { background: white; padding: 40px; border-radius: 30px; width: 95%; max-width: 420px; }
 
-/* UI Elements */
-.search-bar { border-radius: 50px; padding: 15px 25px; border: 1px solid #eee; background: #f8f9fa; }
+.nav-pills .nav-link.active { background-color: #000; color: white; }
+.nav-link { color: #666; }
+
+.search-bar { border-radius: 50px; padding: 15px 25px; border: 1px solid #eee; background: #f8f9fa; box-shadow: none !important; }
 .upload-card { background: #fff; border: 1px solid #eee; border-radius: 20px; }
-.bike-card { border: none; border-radius: 20px; overflow: hidden; background: #f8f9fa; transition: 0.2s; }
+.bike-card { border: none; border-radius: 20px; overflow: hidden; background: #f8f9fa; transition: 0.2s; height: 100%; }
 .bike-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
 
 .price-text { color: #ff3e3e; font-weight: 800; font-size: 1.1rem; }
+.badge-ai { font-size: 0.7rem; padding: 4px 10px; border-radius: 50px; background: #000; color: #fff; position: absolute; top: 10px; left: 10px; }
