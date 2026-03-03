@@ -1,19 +1,62 @@
-body { background: #f4f7f6; font-family: 'Inter', sans-serif; margin:0; padding:0; }
-
-.splash-screen {
-    position: fixed; top:0; left:0; width:100%; height:100%;
-    background: #000; color:#fff; display:flex; flex-direction:column;
-    justify-content:center; align-items:center; z-index:9999;
+:root {
+    --accent: #ff3e3e; /* Racing Red */
+    --bg: #0a0a0a;
+    --card: #161616;
 }
 
-.loader-bar { width: 50px; height: 3px; background: #fff; animation: loading 1s infinite; }
-@keyframes loading { 0% { opacity:0.2; } 50% { opacity:1; } 100% { opacity:0.2; } }
+body { 
+    background-color: var(--bg); 
+    color: white; 
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    margin: 0;
+}
 
-.auth-container { height: 100vh; display: flex; align-items: center; justify-content: center; }
-.auth-card { background: #fff; padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; }
+/* ⚡ The Splash Screen */
+.splash-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: black; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; z-index: 10000;
+}
 
-.glass-card { background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); border-radius: 20px; }
-.glass-input { border-radius: 50px; border:none; padding: 15px 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.logo-text {
+    font-size: 2.5rem; font-weight: 900; letter-spacing: -2px;
+    background: linear-gradient(to right, #fff, #888);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
 
-.bike-card { border:none; border-radius: 20px; overflow: hidden; transition: 0.3s; }
-.bike-card:hover { transform: translateY(-5px); }
+/* 💎 Glassmorphism Inputs */
+.glass-input {
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: white !important;
+    border-radius: 12px !important;
+    padding: 15px !important;
+}
+
+/* 🚲 Premium Bike Cards */
+.bike-card {
+    background: var(--card);
+    border: 1px solid #222;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bike-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(255, 62, 62, 0.2);
+}
+
+.price-tag {
+    color: var(--accent);
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+/* 📱 Navigation */
+.navbar {
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid #222;
+}
