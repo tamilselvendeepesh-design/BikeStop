@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BikeStop SG | Premium Marketplace</title>
-    
+    <title>BikeStop SG | Premium AI Marketplace</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
 </head>
 <body>
@@ -20,41 +18,76 @@
 
     <div id="loginPage" class="page-view" style="display:none;">
         <div class="auth-wrapper">
-            <div class="auth-card shadow-lg text-center">
-                <h2 class="fw-bold mb-2">Welcome</h2>
-                <p class="text-muted small mb-4">The AI-powered bike marketplace.</p>
-                <button id="googleBtn" class="btn btn-dark w-100 py-3 rounded-pill fw-bold">
-                    Continue with Google
-                </button>
-                <button onclick="showPage('homePage')" class="btn btn-link text-dark mt-3 text-decoration-none">Browse as Guest</button>
+            <div class="auth-card shadow-lg">
+                <h2 class="fw-bold mb-4 text-center">Join BikeStop</h2>
+                
+                <ul class="nav nav-pills nav-fill mb-4 bg-light rounded-pill p-1" id="authTabs">
+                    <li class="nav-item"><a class="nav-link active small" data-bs-toggle="pill" href="#googleTab">Social</a></li>
+                    <li class="nav-item"><a class="nav-link small" data-bs-toggle="pill" href="#emailTab">Email</a></li>
+                    <li class="nav-item"><a class="nav-link small" data-bs-toggle="pill" href="#phoneTab">OTP</a></li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="googleTab">
+                        <button id="googleBtn" class="btn btn-dark w-100 py-3 rounded-pill fw-bold">Continue with Google</button>
+                    </div>
+                    <div class="tab-pane fade" id="emailTab">
+                        <input type="email" id="emailInput" class="form-control mb-2 rounded-pill" placeholder="Email Address">
+                        <input type="password" id="passInput" class="form-control mb-3 rounded-pill" placeholder="Password">
+                        <div class="d-grid gap-2">
+                            <button id="emailPassBtn" class="btn btn-dark rounded-pill">Login / Sign Up</button>
+                            <button id="emailLinkBtn" class="btn btn-outline-dark rounded-pill border-0 small">Send Login Link</button>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="phoneTab">
+                        <div id="recaptcha-container"></div>
+                        <input type="tel" id="phoneInput" class="form-control mb-2 rounded-pill" placeholder="+65 8123 4567">
+                        <button id="phoneBtn" class="btn btn-dark w-100 rounded-pill">Send OTP</button>
+                        <div id="otpSection" class="mt-3" style="display:none;">
+                            <input type="text" id="otpInput" class="form-control mb-2 rounded-pill" placeholder="6-Digit Code">
+                            <button id="verifyOtpBtn" class="btn btn-danger w-100 rounded-pill">Verify & Enter</button>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="showPage('homePage')" class="btn btn-link text-dark w-100 mt-3 text-decoration-none small">Browse as Guest</button>
             </div>
         </div>
     </div>
 
     <div id="homePage" class="page-view" style="display:none;">
         <nav class="navbar navbar-light sticky-top bg-white border-bottom py-3">
-            <div class="container d-flex justify-content-between">
+            <div class="container d-flex justify-content-between align-items-center">
                 <a class="navbar-brand fw-bold" href="#" onclick="location.reload()">BIKESTOP</a>
-                <button class="btn btn-danger rounded-pill px-4 fw-bold" onclick="toggleUpload()">+ SELL</button>
+                <div>
+                    <button class="btn btn-danger rounded-pill px-4 fw-bold" onclick="toggleUpload()">+ SELL</button>
+                    <button class="btn btn-outline-dark btn-sm rounded-pill ms-2" id="logoutBtn">Logout</button>
+                </div>
             </div>
         </nav>
 
         <div class="container mt-4">
-            <input type="text" id="search" class="form-control search-bar mb-4" placeholder="Search S-Works, Carbon, Trek..." onkeyup="render()">
+            <input type="text" id="search" class="form-control search-bar mb-4" placeholder="Search carbon, trek, s-works..." onkeyup="render()">
             
             <div id="uploadSection" class="upload-card p-4 mb-4 shadow-sm" style="display:none;">
-                <h5 class="fw-bold mb-3">Post a Listing</h5>
+                <h5 class="fw-bold mb-3">AI Bike Scanner</h5>
                 <input type="text" id="bikeTitle" class="form-control mb-2" placeholder="Brand & Model">
                 <input type="number" id="bikePrice" class="form-control mb-2" placeholder="Price (SGD)">
-                <textarea id="bikeCondition" class="form-control mb-3" placeholder="Describe the bike (AI will detect Material)..."></textarea>
+                <textarea id="bikeCondition" class="form-control mb-3" placeholder="Describe the bike. AI detects material (Carbon, Alloy, Ti)..."></textarea>
                 <input type="file" id="bikePhotos" class="form-control mb-3" multiple>
-                <button id="upBtn" class="btn btn-dark w-100 py-2 rounded-pill fw-bold">Post with AI Scanner</button>
+                <button id="upBtn" class="btn btn-dark w-100 py-2 rounded-pill fw-bold">Post Listing</button>
             </div>
 
             <div id="grid" class="row g-3 pb-5"></div>
         </div>
+
+        <footer class="text-center py-4 mt-5 border-top">
+            <p class="small text-muted">© 2026 BikeStop.Store</p>
+            <a href="privacy-policy.html" class="text-decoration-none text-muted small mx-2">Privacy Policy</a>
+            <a href="terms-of-service.html" class="text-decoration-none text-muted small mx-2">Terms of Service</a>
+        </footer>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="app.js"></script>
 </body>
 </html>
