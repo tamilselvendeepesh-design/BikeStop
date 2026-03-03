@@ -1,14 +1,14 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { 
     getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut,
-    signInWithEmailAndPassword, createUserWithEmailAndPassword, sendSignInLinkToEmail,
-    isSignInWithEmailLink, signInWithEmailLink, RecaptchaVerifier, signInWithPhoneNumber
+    signInWithEmailAndPassword, createUserWithEmailAndPassword, 
+    sendSignInLinkToEmail, sendPasswordResetEmail, sendEmailVerification 
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyB4GuZE6rpatln-LlOJE3z_h3fn1F6mxZg",
-    authDomain: "bikestop.store",
+    authDomain: "bikestop.store", // Custom Domain for branding
     projectId: "bikestop-72fa7",
     storageBucket: "bikestop-72fa7.firebasestorage.app",
     messagingSenderId: "264513335139",
@@ -22,23 +22,45 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let allBikes = [];
+const statusBox = document.getElementById('authStatus');
+const verifyBanner = document.getElementById('verifyBanner');
 
-// --- NAVIGATION ---
+// --- UTILITIES ---
 window.showPage = (id) => {
     document.querySelectorAll('.page-view').forEach(p => p.style.display = 'none');
     document.getElementById(id).style.display = 'block';
 };
 
-window.toggleUpload = () => {
-    const el = document.getElementById('uploadSection');
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
-};
+function showStatus(msg, isError = false) {
+    statusBox.innerText = msg;
+    statusBox.className = `alert small py-2 ${isError ? 'alert-danger' : 'alert-success'}`;
+    statusBox.classList.remove('d-none');
+    setTimeout(() => statusBox.classList.add('d-none'), 6000);
+}
 
-// --- AUTH LOGIC ---
+function checkVerification(user) {
+    if (user && !user.emailVerified) {
+        verifyBanner.classList.remove('d-none');
+        return false;
+    }
+    verifyBanner.classList.add('d-none');
+    return true;
+}
+
+// --- AUTH ACTIONS ---
 document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => location.reload());
 
 document.getElementById('googleBtn').onclick = async () => {
     try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch (e) { alert(e.message); }
+};
+
+document.getElementById('forgotPassBtn').onclick = async () => {
+    const email = document.getElementById('emailInput').value;
+    if (!email) return alert("Enter email first.");
+    try {
+        await sendPasswordResetEmail(auth, email);
+        showStatus("Password reset email sent!");
+    } catch (e) { showStatus(e.message, true); }
 };
 
 document.getElementById('emailPassBtn').onclick = async () => {
@@ -47,44 +69,44 @@ document.getElementById('emailPassBtn').onclick = async () => {
     try {
         await signInWithEmailAndPassword(auth, email, pass);
     } catch (e) {
-        if (e.code === 'auth/user-not-found') await createUserWithEmailAndPassword(auth, email, pass);
-        else alert(e.message);
+        if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                await sendEmailVerification(cred.user);
+                showStatus("Account created! Check email to verify.");
+            } catch (err) { showStatus(err.message, true); }
+        } else { showStatus(e.message, true); }
     }
 };
 
-document.getElementById('emailLinkBtn').onclick = async () => {
-    const email = document.getElementById('emailInput').value;
+document.getElementById('resendVerifyBtn').onclick = async () => {
     try {
-        await sendSignInLinkToEmail(auth, email, { url: window.location.href, handleCodeInApp: true });
-        window.localStorage.setItem('emailForSignIn', email);
-        alert("Link Sent!");
+        await sendEmailVerification(auth.currentUser);
+        alert("Verification link resent!");
     } catch (e) { alert(e.message); }
 };
 
-if (isSignInWithEmailLink(auth, window.location.href)) {
-    let email = window.localStorage.getItem('emailForSignIn') || window.prompt('Email for confirmation?');
-    signInWithEmailLink(auth, email, window.location.href).then(() => window.localStorage.removeItem('emailForSignIn'));
-}
-
-window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'invisible' });
-document.getElementById('phoneBtn').onclick = async () => {
-    try {
-        window.confirmationResult = await signInWithPhoneNumber(auth, document.getElementById('phoneInput').value, window.recaptchaVerifier);
-        document.getElementById('otpSection').style.display = 'block';
-    } catch (e) { alert(e.message); }
-};
-document.getElementById('verifyOtpBtn').onclick = async () => {
-    try { await window.confirmationResult.confirm(document.getElementById('otpInput').value); } catch (e) { alert("Wrong OTP"); }
+// --- NAVIGATION & OBSERVER ---
+window.toggleUpload = () => {
+    if (!auth.currentUser) return alert("Please login first!");
+    if (!checkVerification(auth.currentUser)) return alert("Verify your email to sell!");
+    const el = document.getElementById('uploadSection');
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
 };
 
 onAuthStateChanged(auth, (user) => {
     setTimeout(() => {
         document.getElementById('splash').style.display = 'none';
-        user ? showPage('homePage') : showPage('loginPage');
+        if (user) {
+            showPage('homePage');
+            checkVerification(user);
+        } else {
+            showPage('loginPage');
+        }
     }, 1200);
 });
 
-// --- DATA LOGIC ---
+// --- DATA & RENDER ---
 onSnapshot(query(collection(db, "bikes"), orderBy("time", "desc")), (snap) => {
     allBikes = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     window.render();
@@ -100,7 +122,7 @@ window.render = () => {
     }
     results.forEach(bike => {
         grid.innerHTML += `
-            <div class="col-md-4 col-6 mb-3 position-relative">
+            <div class="col-md-4 col-6 mb-3">
                 <div class="card bike-card">
                     <span class="badge-ai">${bike.frame || 'Bike'}</span>
                     <img src="${bike.images[0]}" class="card-img-top" style="height:160px; object-fit:cover;">
@@ -134,6 +156,9 @@ document.getElementById('upBtn').onclick = async () => {
         const d = await r.json(); urls.push(d.data.url);
     }
 
-    await addDoc(collection(db, "bikes"), { title, price: Number(price), condition: desc, frame: mat, images: urls, time: Date.now() });
+    await addDoc(collection(db, "bikes"), { 
+        title, price: Number(price), condition: desc, frame: mat, 
+        images: urls, time: Date.now(), sellerUid: auth.currentUser.uid 
+    });
     location.reload();
 };
